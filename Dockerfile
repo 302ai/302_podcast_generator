@@ -30,6 +30,10 @@ WORKDIR /app
 # Copy dependencies and source code
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Generate Prisma client
+RUN corepack enable pnpm && pnpm dlx prisma generate
+
 # Execute build according to build mode
 RUN corepack enable pnpm && pnpm run build;
 

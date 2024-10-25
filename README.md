@@ -1,4 +1,4 @@
-# 🎙️🤖 Welcome to AI Podcast Generator! 🚀✨
+# 🎙️🤖 Welcome to 302.AI's AI Podcast Generator! 🚀✨
 
 [中文](README_zh.md) | [English](README.md) | [日本語](README_ja.md)
 

@@ -1,0 +1,40 @@
+{
+  "about": {
+    "title": "について",
+    "trigger": {
+      "label": "ツール情報のポップアップを開く/閉じる"
+    }
+  },
+  "copyFailed": "コピーに失敗しました、手動でコピーしてください。",
+  "copySuccess": "コピー成功",
+  "error_page": {
+    "reload": "再読み込み",
+    "title": "予想外の故障が発生しました"
+  },
+  "footer": {
+    "copyright_content": "<LogoLink></LogoLink>によって駆動されます",
+    "copyright_leading": "コンテンツはAIによって生成され、参考のためだけです。"
+  },
+  "history": {
+    "delete": {
+      "error": "削除に失敗しました",
+      "success": "削除成功"
+    },
+    "download": {
+      "error": "履歴記録が異常です、もう一度お試しください",
+      "success": "ダウンロード成功"
+    },
+    "empty": "履歴記録は一時的にありません",
+    "title": "歴史記録",
+    "trigger": {
+      "label": "履歴記録を開く/閉じる"
+    }
+  },
+  "switch_language": "言語を切り替える",
+  "switch_theme": {
+    "dark": "夜間",
+    "light": "昼間",
+    "system": "システムに従う",
+    "toggle_theme": "テーマの切り替え"
+  }
+}

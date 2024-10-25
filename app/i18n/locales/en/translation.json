@@ -1,0 +1,28 @@
+{
+  "azure": "Azure",
+  "custom": "Custom",
+  "doubao": "Doubao",
+  "errors": {
+    "-10001": "Missing 302 Apikey",
+    "-10002": "This tool has been disabled/deleted, for details please view <Gw>302.AI</Gw>.",
+    "-10003": "Network error, please try again later",
+    "-10004": "Insufficient account balance. Create your own tool, for details please view <Gw>302.AI</Gw>.",
+    "-10005": "Account credential expired, please log in again",
+    "-10006": "Total Quota reached maximum limit, for details please view <Gw>302.AI</Gw>",
+    "-10007": "Daily Quota reached maximum limit, for details please view <Gw>302.AI</Gw>",
+    "-10008": "No available channels currently, for details please view <Gw>302.AI</Gw>",
+    "-10009": "Current API function not supported, for details please view <Gw>302.AI</Gw>",
+    "-10010": "Resource not found, for details please view <Gw>302.AI</Gw>",
+    "-10011": "Invalid request",
+    "-10012": "This free tool's hour quota reached maximum limit. Please view <Gw>302.AI</Gw> to create your own tool",
+    "-1024": "AI interface connection timeout, please try again later or contact <Gw>302.AI</Gw>",
+    "-10504": "Generation timed out, please try again.",
+    "-10600": "Audio decoding failure",
+    "default": "Unknown error, for details please view <Gw>302.AI</Gw>"
+  },
+  "female": "woman",
+  "fish": "FishAudio",
+  "male": "man",
+  "minimax": "Minimax",
+  "openai": "OpenAI"
+}

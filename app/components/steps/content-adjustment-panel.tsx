@@ -69,9 +69,12 @@ const DialogueItem = ({
     transform: CSS.Transform.toString(transform),
     transition,
   }
-  const { speakerNums, setDialogueItems } = usePodcastInfoStore((state) => ({
+  const { speakerNums, setDialogueItems, speakerNames, useSpeakerName } =
+  usePodcastInfoStore((state) => ({
     speakerNums: state.speakerNums,
     setDialogueItems: state.setDialogueItems,
+    speakerNames: state.speakerNames,
+    useSpeakerName: state.useSpeakerName,
   }))
 
   const handleSpeakerChange = (value: string) => {
@@ -137,8 +140,11 @@ const DialogueItem = ({
               {Array.from({ length: speakerNums }, (_, i) => i + 1).map(
                 (speaker) => (
                   <SelectItem key={speaker} value={speaker.toString()}>
-                    {t(`home:step.content-adjustment.role`)}{' '}
-                    {String.fromCharCode(64 + speaker)}
+                   {useSpeakerName
+                      ? speakerNames[speaker - 1]
+                      : t(`home:step.content-adjustment.role`) +
+                        ' ' +
+                        String.fromCharCode(64 + speaker)}
                   </SelectItem>
                 )
               )}
@@ -247,6 +253,7 @@ export const ContentAdjustmentPanel = ({ stepper }: { stepper: Stepper }) => {
             modelName: env('NEXT_PUBLIC_DEFAULT_MODEL_NAME'),
             isExtract,
             customPrompt: genDialogPrompt,
+            version: 'v3'
           },
         })
         .json<{

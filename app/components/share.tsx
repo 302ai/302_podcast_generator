@@ -14,11 +14,15 @@ export const DialogueItem = ({
   content,
   speaker,
   speakerNums,
+  useSpeakerName,
+  speakerNames,
 }: {
   id: string
   content: string
   speaker: number
   speakerNums: number
+  useSpeakerName: boolean
+  speakerNames: string[]
 }) => {
   const { t } = useClientTranslation()
 
@@ -37,8 +41,11 @@ export const DialogueItem = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem key={speaker} value={speaker.toString()}>
-                {t(`home:step.content-adjustment.role`)}{' '}
-                {String.fromCharCode(64 + speaker)}
+              {useSpeakerName
+                  ? speakerNames[speaker - 1]
+                  : t(`home:step.content-adjustment.role`) +
+                    ' ' +
+                    String.fromCharCode(64 + speaker)}
               </SelectItem>
             </SelectContent>
           </Select>

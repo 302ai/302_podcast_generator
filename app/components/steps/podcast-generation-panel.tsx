@@ -118,9 +118,13 @@ export const PodcastGenerationPanel = ({
     handleGenerate()
   }
 
-  const { dialogueItems } = usePodcastInfoStore((state) => ({
-    dialogueItems: state.dialogueItems,
-  }))
+  const { dialogueItems, useSpeakerName, speakerNames } = usePodcastInfoStore(
+    (state) => ({
+      dialogueItems: state.dialogueItems,
+      useSpeakerName: state.useSpeakerName,
+      speakerNames: state.speakerNames,
+    })
+  )
 
   const [isShareCreating, setIsShareCreating] = useState(false)
   const [isOpenShareCopyDialog, setIsOpenShareCopyDialog] = useState(false)
@@ -148,6 +152,8 @@ export const PodcastGenerationPanel = ({
         title,
         dialogues: dialogueItems,
         mp3Url: mp3,
+        useSpeakerName,
+        names: speakerNames,
       })
       handleCopy(`${window.location.origin}/${locale}/share/${res.id}`)
     } catch (error) {

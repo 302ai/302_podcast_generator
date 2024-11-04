@@ -22,6 +22,8 @@ export default async function SharePage({
               key={dialogue.id}
               {...dialogue}
               speakerNums={speakerNums.size}
+              useSpeakerName={share?.useSpeakerName ?? false}
+              speakerNames={share?.names ?? []}
             />
           ))}
         </div>

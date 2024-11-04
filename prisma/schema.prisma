@@ -14,10 +14,12 @@ datasource db {
 }
 
 model PodcastShare {
-  id        String   @id @default(uuid()) @map("_id")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  dialogues Json
-  mp3Url    String   @unique
+  id             String   @id @default(uuid()) @map("_id")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  title          String
+  dialogues      Json
+  useSpeakerName Boolean
+  names          String[]
+  mp3Url         String   @unique
 }

@@ -11,7 +11,7 @@ interface Props {
 const Header = forwardRef<HTMLDivElement, Props>(
   ({ className }, ref) => {
     const { t } = useClientTranslation()
-    const showBrand = env('NEXT_PUBLIC_SHOW_BRAND')
+    const showBrand = env('NEXT_PUBLIC_SHOW_BRAND') === 'true'
 
     return (
       <header

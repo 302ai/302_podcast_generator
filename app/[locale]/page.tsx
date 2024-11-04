@@ -9,7 +9,7 @@ export default function Home({
 }: {
   params: { locale: string }
 }) {
-  const showBrand = env('NEXT_PUBLIC_SHOW_BRAND')
+  const showBrand = env('NEXT_PUBLIC_SHOW_BRAND') === 'true'
   return (
     <>
       <div className='flex h-full min-h-screen flex-col justify-between'>

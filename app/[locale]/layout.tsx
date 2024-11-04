@@ -1,5 +1,5 @@
 import '@/lib/check-env'
-import { PublicEnvScript } from 'next-runtime-env'
+import { env, PublicEnvScript } from 'next-runtime-env'
 import '../globals.css'
 
 import ClientOnly from '@/app/components/client-only'
@@ -100,6 +100,7 @@ export default function RootLayout({
   children: React.ReactNode
   params: { locale: string }
 }>) {
+  const showBrand = env('NEXT_PUBLIC_SHOW_BRAND') === 'true'
   return (
     <html lang={locale} dir={dir(locale)}>
       <head>
@@ -112,10 +113,12 @@ export default function RootLayout({
             <ErrorHandler />
             <Toolbar />
             {children}
-            <script
-              src='https://assets.salesmartly.com/js/project_177_61_1649762323.js'
-              async
-            />
+            {showBrand && (
+              <script
+                src='https://assets.salesmartly.com/js/project_177_61_1649762323.js'
+                async
+              />
+            )}
           </Providers>
         </ClientOnly>
       </body>

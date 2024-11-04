@@ -6,7 +6,7 @@
 你可以直接登录302.AI，零代码零配置使用在线版本。
 或者对本项目根据自己的需求进行修改，传入302.AI的API KEY，自行部署。
 
-## ✨ 302.AI介绍 ✨ 
+## ✨ 302.AI介绍 ✨
 [302.AI](https://302.ai)是一个按需付费的AI应用平台，为用户解决AI用于实践的最后一公里问题。
 1. 🧠 集合了最新最全的AI能力和品牌，包括但不限于语言模型、图像模型、声音模型、视频模型。
 2. 🚀 在基础模型上进行深度应用开发，我们开发真正的AI产品，而不是简单的对话机器人
@@ -38,7 +38,7 @@
 - MongoDB
 
 ## 开发&部署
-1. 克隆项目 `git clone https://github.com/302ai/pub_podcast_generator`
+1. 克隆项目 `git clone https://github.com/302ai/302_podcast_generator`
 2. 安装依赖 `pnpm install`
 3. 配置302的API KEY 参考.env.example
 4. 运行项目 `pnpm prisma generate && pnpm dev`

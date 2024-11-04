@@ -6,7 +6,7 @@ Open-source version of the [AI Podcast Generator](https://302.ai/tools/podcast/)
 You can directly log in to 302.AI for a zero-code, zero-configuration online experience.
 Alternatively, customize this project to suit your needs, integrate 302.AI's API KEY, and deploy it yourself.
 
-## ✨ About 302.AI ✨ 
+## ✨ About 302.AI ✨
 [302.AI](https://302.ai) is a pay-as-you-go AI application platform, bridging the gap between AI capabilities and practical implementation.
 1. 🧠 Comprehensive AI capabilities: Incorporates the latest in language, image, audio, and video models from leading AI brands.
 2. 🚀 Advanced application development: We build genuine AI products, not just simple chatbots.
@@ -38,7 +38,7 @@ With AI Podcast Generator, anyone can become a podcast creator! 🎉🎙️ Let'
 - MongoDB
 
 ## Development & Deployment
-1. Clone the project: `git clone https://github.com/302ai/pub_podcast_generator`
+1. Clone the project: `git clone https://github.com/302ai/302_podcast_generator`
 2. Install dependencies: `pnpm install`
 3. Configure environment variables: Refer to .env.example
 4. Run the project: `pnpm prisma generate && pnpm dev`

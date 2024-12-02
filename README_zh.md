@@ -1,4 +1,4 @@
-# 🎙️🤖 欢迎来到302.AI的AI播客生成器! 🚀✨
+# 🎙️ AI 播客生成器 🚀✨
 
 [中文](README_zh.md) | [English](README.md) | [日本語](README_ja.md)
 

@@ -2,7 +2,7 @@
 
 <p align="center">AI播客生成器通过提交各种图片、文本、链接、文件等素材，使用大语言模型生成对话内容，并支持合成背景音乐，生成高质量的播客音频。</p>
 
-<p align="center"><a href="https://302.ai/tools/word/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/badge/21212.png" /></a></p >
+<p align="center"><a href="https://302.ai/tools/word/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
 
 <p align="center"><a href="README zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
@@ -13,18 +13,12 @@
 或者对本项目根据自己的需求进行修改，传入302.AI的API KEY，自行部署。
 
 ## 界面预览
-### 1、选择素材
-![一、选择素材](docs/one.png)
-![一、选择素材-暗色](docs/one_dark.png)
-### 2、调整内容
-![二、调整内容](docs/two.png)
-![二、调整内容-暗色](docs/two_dark.png)
-### 3、配置声音
-![三、配置声音](docs/three.png)
-![三、配置声音-暗色](docs/three_dark.png)
-### 4、生成播客
-![四、生成播客](docs/four.png)
-![四、生成播客-暗色](docs/four_dark.png)
+根据上传的文件内容，AI将生成播客脚本。可以选择对话人数、输出语言和自定义提示词。
+![一、选择素材](docs/播客1.jpg)      
+
+完整的播客生成完毕，可下载可分享，也可重新生成。
+![一、选择素材](docs/播客2.png)
+
 
 ## 项目特性
 ### 🎭 AI角色扮演

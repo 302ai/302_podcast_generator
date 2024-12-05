@@ -2,9 +2,9 @@
 
 <p align="center">AI播客生成器通过提交各种图片、文本、链接、文件等素材，使用大语言模型生成对话内容，并支持合成背景音乐，生成高质量的播客音频。</p>
 
-<p align="center"><a href="https://302.ai/tools/word/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
+<p align="center"><a href="https://302.ai/tools/podcast/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
 
-<p align="center"><a href="README zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
+<p align="center"><a href="README_zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
 ![一、选择素材](docs/播客生成器.png)      
 

@@ -2,9 +2,9 @@
 
 <p align="center">AI ポッドキャスト生成器は、画像、テキスト、リンク、ファイルなどの様々な素材を提出することで、大規模言語モデルを利用して会話内容を生成し、また、背景音楽の合成をサポートして、高品質のポッドキャスト音声を生成する。</p>
 
-<p align="center"><a href="https://302.ai/tools/word/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
+<p align="center"><a href="https://302.ai/ja/tools/podcast/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
 
-<p align="center"><a href="README zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
+<p align="center"><a href="README_zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
 ![1. 素材を選択](docs/播客生成器jp.png)
 

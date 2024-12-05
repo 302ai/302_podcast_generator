@@ -8,7 +8,7 @@
 
 ![1. 素材を選択](docs/播客生成器jp.png)
 
-[302.AI](https://302.ai)の[AI Podcast Generator](https://302.ai/tools/podcast/)のオープンソース版です。
+[302.AI](https://302.ai)の[AI Podcast Generator](https://302.ai/ja/tools/podcast/)のオープンソース版です。
 302.AIに直接ログインすることで、コード不要、設定不要のオンライン体験が可能です。
 あるいは、このプロジェクトをニーズに合わせてカスタマイズし、302.AIのAPI KEYを統合して、自身でデプロイすることもできます。
 

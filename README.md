@@ -13,11 +13,23 @@ You can directly log in to 302.AI for a zero-code, zero-configuration online exp
 Alternatively, customize this project to suit your needs, integrate 302.AI's API KEY, and deploy it yourself.
 
 ## Interface Preview
-Based on the content of the uploaded file, the AI will generate a podcast script. You can choose the number of people in the conversation, the output language and customize prompts.
-![1. Select Materials](docs/播客英1.png)    
+By using the "Long Dialogue" feature to generate podcast scripts, not only can you select the target audience for podcast content, but you can also set roles and customize prompt words.
+![](docs/302_Podcast_Generator_en_screenshot_01.png)   
+
+After generating the conversation, you can select the text for individual editing or use AI optimization to modify it.
+![](docs/302_Podcast_Generator_en_screenshot_02.png)    
+
+You can select dialogue content in bulk for batch operations.
+![](docs/302_Podcast_Generator_en_screenshot_03.png)    
+
+There are multiple speech models and packages to choose from, and you can also select background music to configure the sound for your podcast.
+![](docs/302_Podcast_Generator_en_screenshot_04.png)    
+
+You can create a personalized speech model by recording audio.
+![](docs/302_Podcast_Generator_en_screenshot_05.png) 
 
 Once the complete podcast is generated, it can be downloaded, shared or regenerated.
-![2. Adjust Content](docs/播客英2.png)
+![](docs/302_Podcast_Generator_en_screenshot_06.png)
 
 ## Project Features
 ### 🎭 AI Role-playing

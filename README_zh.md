@@ -17,7 +17,7 @@
 ![](docs/302_Podcast_Generator_screenshot_01.png)      
 
 生成对话后，可选中文本进行单独编辑或借助AI优化修改。
-![](docs/302_Podcast_Generator_screenshot_02.png)
+![](docs/302_Podcast_Generator_screenshot_02.PNG)
 
 可以批量选择对话内容进行批量操作。
 ![](docs/302_Podcast_Generator_screenshot_03.png)    

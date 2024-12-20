@@ -13,12 +13,23 @@
 或者对本项目根据自己的需求进行修改，传入302.AI的API KEY，自行部署。
 
 ## 界面预览
-根据上传的文件内容，AI将生成播客脚本。可以选择对话人数、输出语言和自定义提示词。
-![一、选择素材](docs/播客1.jpg)      
+使用“超长对话”功能生成播客脚本，不仅可以选择播客内容的目标受众群体，还可以进行角色设置和自定义提示词。   
+![](docs/302_Podcast_Generator_screenshot_01.png)      
+
+生成对话后，可选中文本进行单独编辑或借助AI优化修改。
+![](docs/302_Podcast_Generator_screenshot_02.png)
+
+可以批量选择对话内容进行批量操作。
+![](docs/302_Podcast_Generator_screenshot_03.png)    
+
+有多种语音模型和语音包可以选择，还可以选择背景音乐，为您的播客配置声音。
+![](docs/302_Podcast_Generator_screenshot_04.png)    
+
+可以通过录制音频，创建专属的语音模型。
+![](docs/302_Podcast_Generator_screenshot_05.png)    
 
 完整的播客生成完毕，可下载可分享，也可重新生成。
-![一、选择素材](docs/播客2.png)
-
+![](docs/302_Podcast_Generator_screenshot_06.png)       
 
 ## 项目特性
 ### 🎭 AI角色扮演

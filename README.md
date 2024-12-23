@@ -13,6 +13,9 @@ You can directly log in to 302.AI for a zero-code, zero-configuration online exp
 Alternatively, customize this project to suit your needs, integrate 302.AI's API KEY, and deploy it yourself.
 
 ## Interface Preview
+Support multiple ways to add resources, generate keywords based on descriptions for search, and choose to add the search results as resource materials.
+![](docs/302_Podcast_Generator_en_screenshot_07.png)   
+
 By using the "Long Dialogue" feature to generate podcast scripts, not only can you select the target audience for podcast content, but you can also set roles and customize prompt words.
 ![](docs/302_Podcast_Generator_en_screenshot_01.png)   
 

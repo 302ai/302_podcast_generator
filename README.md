@@ -32,12 +32,16 @@ Once the complete podcast is generated, it can be downloaded, shared or regenera
 ![](docs/302_Podcast_Generator_en_screenshot_06.png)
 
 ## Project Features
-### 🎭 AI Role-playing
-Create unique podcast host roles to give your program a distinctive personality.
-### 📝 Intelligent Script Generation
-Automatically generate structured podcast scripts based on your topics and keywords.
-### ✏️ Real-time Editing
-Adjust and modify the content at any time during the generation process. You can even use AI to assist you with the editing.
+###  🎯  Material selection
+Support multiple ways to add resources as materials.
+###  📝  Dialogue generation
+- You can choose the mode for generating conversation content or customize prompt words.
+- Provide audience selection and adjust the output tone of podcast scripts according to different audience groups.
+###  🎭  AI Role Playing
+Create a unique podcast host role to give your program a unique personality.
+###  ✏️  Real time editing
+- Adjust and modify the content at any time during the generation process, and even use AI to assist you in editing and optimizing the content.
+- Support batch selection of conversation content for batch operations.
 ### 🗣️ Text-to-Speech
 Convert the generated scripts into lifelike voices. Multiple voices and languages are available for selection, and you can even create your own exclusive voice.
 ### 🎶 Background Music and Sound Effects

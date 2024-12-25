@@ -6,7 +6,7 @@
 
 <p align="center"><a href="README_zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
-![一、选择素材](docs/播客生成器.png)      
+![](docs/302_Podcast_Generator.png)      
 
 来自[302.AI](https://302.ai)的[AI播客生成器](https://302.ai/tools/podcast/)的开源版本。
 你可以直接登录302.AI，零代码零配置使用在线版本。

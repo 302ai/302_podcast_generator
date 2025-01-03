@@ -2,13 +2,13 @@
 
 <p align="center">The AI podcast generator uses large language models to generate conversation content by submitting various materials such as pictures, texts, links, and files, and it also supports the synthesis of background music to generate high-quality podcast audio.</p>
 
-<p align="center"><a href="https://302.ai/en/tools/podcast/" target="blank"><img src="https://file.302ai.cn/gpt/imgs/github/302_badge.png" /></a></p >
+<p align="center"><a href="https://302.ai/en/tools/podcast/" target="blank"><img src="https://file.302.ai/gpt/imgs/github/20250102/72a57c4263944b73bf521830878ae39a.png" /></a></p >
 
 <p align="center"><a href="README_zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
 ![](docs/302_Podcast_Generator_en.png)
 
-Open-source version of the [AI Podcast Generator](https://302.ai/en/tools/podcast/) from [302.AI](https://302.ai).
+Open-source version of the [AI Podcast Generator](https://302.ai/en/tools/podcast/) from [302.AI](https://302.ai/en/).
 You can directly log in to 302.AI for a zero-code, zero-configuration online experience.
 Alternatively, customize this project to suit your needs, integrate 302.AI's API KEY, and deploy it yourself.
 

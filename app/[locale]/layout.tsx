@@ -11,6 +11,7 @@ import { headers } from 'next/headers'
 import { Toaster } from 'react-hot-toast'
 import { Providers } from '../components/providers'
 import { Toolbar } from '../components/toolbar'
+import { ClickMonitor } from '../components/click-monitor'
 
 export async function generateStaticParams() {
   return languages.map((locale) => ({ locale }))
@@ -119,6 +120,8 @@ export default function RootLayout({
                 async
               />
             )}
+            <ClickMonitor />
+
           </Providers>
         </ClientOnly>
       </body>

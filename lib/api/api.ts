@@ -1,7 +1,7 @@
 'use client'
 import { useUserStore } from '@/app/stores/use-user-store'
 import { emitter } from '@/lib/mitt'
-import ky from 'ky'
+import ky, { Options } from 'ky'
 import { env } from 'next-runtime-env'
 import { isEmpty } from 'radash'
 import { langToCountry } from './lang-to-country'
@@ -35,6 +35,16 @@ const apiKy = ky.create({
   },
 })
 
+
+export class ApiError extends Error {
+  error: { err_code: number }
+
+  constructor(err_code: number) {
+    super(err_code.toString())
+    this.error = { err_code }
+  }
+}
+
 const dialogueKy = ky.create({
   prefixUrl: env('NEXT_PUBLIC_DIALOGUE_API_URL'),
   timeout: false,
@@ -64,4 +74,9 @@ const dialogueKy = ky.create({
   },
 })
 
-export { apiKy, dialogueKy }
+
+
+const fetcher = <T>(url: string, options: Options = {}): Promise<T> =>
+  apiKy.post(url, options).json<T>()
+
+export { apiKy, dialogueKy, fetcher }

@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { save } from '@/lib/db'
 import { logger } from '@/lib/logger'
-import { emitter, ProgressEvent } from '@/lib/mitt'
+import { emitter, type ProgressEvent } from '@/lib/mitt'
 import { cn } from '@/lib/utils'
 import { useMemoizedFn } from 'ahooks'
 import ky from 'ky'
-
+import { motion, AnimatePresence } from 'framer-motion'
 import { createShare } from '@/app/actions/database'
+import StarfieldBackground from '@/app/components/starfield-background'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import {
   ArrowLeft,
   Check,
@@ -44,13 +46,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useCopyToClipboard } from 'usehooks-ts'
 import MP3Player from '../mp3-player'
+import store from 'store2'
+
+export const podcast = store.namespace('podcast')
 
 export const PodcastGenerationPanel = ({
   stepper,
-  handleGenerate,
+  handleSubmitTask,
+  setTaskId,
 }: {
   stepper: Stepper
-  handleGenerate: () => void
+  handleSubmitTask: () => void
+  setTaskId: (taskId: string | null) => void
 }) => {
   const { t } = useClientTranslation()
   const { mp3, setMp3 } = usePodcastInfoStore((state) => ({
@@ -73,11 +80,15 @@ export const PodcastGenerationPanel = ({
     if (event.progress === 100) {
       setMp3(event.content)
       setTitle(event.title)
-      localStorage.removeItem('generating')
+      podcast.remove('generating')
+      podcast.set('taskId', null)
       await save({
         title: event.title,
         mp3: event.content,
       })
+      setTaskId(null)
+      podcast.set('taskId', null)
+      podcast.set('generating', false)
     }
   })
   useEffect(() => {
@@ -86,6 +97,34 @@ export const PodcastGenerationPanel = ({
   }, [progressResolve])
 
   const [isDownloading, setIsDownloading] = useState(false)
+  const [isAudioReady, setIsAudioReady] = useState(false)
+  useEffect(() => {
+    if (mp3 && !isAudioReady) {
+      const audio = new Audio(mp3)
+
+      const handleLoaded = () => {
+        if (audio.duration > 0) {
+          setIsAudioReady(true)
+        }
+      }
+
+      const handleError = (e: ErrorEvent) => {
+        logger.error('Error loading audio:', e)
+        setTimeout(() => {
+          audio.load()
+        }, 1000)
+      }
+
+      audio.addEventListener('loadedmetadata', handleLoaded)
+      audio.addEventListener('error', handleError)
+
+      return () => {
+        audio.removeEventListener('loadedmetadata', handleLoaded)
+        audio.removeEventListener('error', handleError)
+        audio.src = ''
+      }
+    }
+  }, [mp3, isAudioReady])
 
   const handleDownload = async () => {
     try {
@@ -115,7 +154,7 @@ export const PodcastGenerationPanel = ({
   const handleRegenerate = () => {
     setProgress(0)
     setDescription('')
-    handleGenerate()
+    handleSubmitTask()
   }
 
   const { dialogueItems, useSpeakerName, speakerNames } = usePodcastInfoStore(
@@ -131,12 +170,11 @@ export const PodcastGenerationPanel = ({
 
   const [copiedText, copy] = useCopyToClipboard()
   const handleCopy = (text: string) => {
-    console.log('text', text)
     copy(text)
       .then(() => {
         toast.success(t('home:step.podcast-generation.success-share'))
       })
-      .catch((error: any) => {
+      .catch(() => {
         toast.error(t('extras:copyFailed'))
         setIsOpenShareCopyDialog(true)
       })
@@ -165,138 +203,192 @@ export const PodcastGenerationPanel = ({
   }
 
   return (
-    <div
-      className={cn(
-        'flex w-full flex-col gap-4 rounded-md border-2 border-dashed bg-white p-4 dark:bg-background'
-      )}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className='flex flex-1 flex-col gap-8 p-6 max-w-5xl mx-auto w-full'
     >
-      <Dialog
-        open={isOpenShareCopyDialog}
-        onOpenChange={setIsOpenShareCopyDialog}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t('home:step.podcast-generation.share-copy-dialog-title')}
-            </DialogTitle>
-            <DialogDescription>
-              {t('home:step.podcast-generation.share-copy-dialog-description')}
-            </DialogDescription>
-          </DialogHeader>
-          <Input
-            value={copiedText ?? ''}
-            onChange={() => {}}
-
-            className='w-full'
-          />
-        </DialogContent>
-      </Dialog>
-      {isDone ? (
-        <div className='flex flex-col items-center gap-4'>
-          <h2 className='flex items-center gap-2 text-center text-lg font-medium'>
-            <div className='flex size-6 items-center justify-center rounded-full bg-green-500'>
-              <Check className='h-4 w-4 text-white' />
-            </div>
-            {t('home:step.podcast-generation.done')}
-          </h2>
-          <div className='flex w-full flex-col items-center gap-2'>
-            <MP3Player audioSrc={mp3} title={title} />
-          </div>
-          <div className='flex flex-col items-center gap-2 sm:flex-row sm:items-center'>
-            <div className='flex items-center gap-2'>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant='outline'
-                    className='flex items-center gap-2'
-                    onClick={() => {}}
-                  >
-                    <ArrowLeft className='h-4 w-4' />
-                    {t('home:step.prev')}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t('home:step.podcast-generation.confirm-go-back-title')}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t(
-                        'home:step.podcast-generation.confirm-go-back-description'
-                      )}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      {t('home:step.podcast-generation.confirm-go-back-cancel')}
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={() => stepper.prev()}>
-                      {t(
-                        'home:step.podcast-generation.confirm-go-back-continue'
-                      )}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button
-                variant='outline'
-                className='flex items-center gap-2'
-                onClick={handleReset}
-              >
-                <Plus className='h-4 w-4' />
-                {t('home:step.podcast-generation.make-another')}
-              </Button>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Button
-                variant='outline'
-                className='flex items-center gap-2'
-                onClick={handleRegenerate}
-              >
-                <RotateCcw className='h-4 w-4' />
-                {t('home:step.podcast-generation.regenerate')}
-              </Button>
-              <Button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className='flex items-center gap-2'
-              >
-                {isDownloading ? (
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                ) : (
-                  <Download className='h-4 w-4' />
-                )}
-                {t('home:step.podcast-generation.download')}
-              </Button>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Button
-                variant='default'
-                className='flex items-center gap-2'
-                onClick={handleShare}
-                disabled={isShareCreating}
-              >
-                {isShareCreating ? (
-                  <Loader2 className='size-4 animate-spin' />
-                ) : (
-                  <Share className='size-4' />
-                )}
-                {t('home:step.podcast-generation.share')}
-              </Button>
-            </div>
-          </div>
+      <div className='relative overflow-hidden bg-gradient-to-br from-background/98 via-background/99 to-background/98 rounded-3xl p-8 shadow-lg border'>
+        <div className="absolute inset-0">
+          <StarfieldBackground />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/[0.02] via-violet-500/[0.02] to-purple-500/[0.02] opacity-100" />
         </div>
-      ) : (
-        <>
-          <h2 className='text-center text-lg font-medium'>
-            {t('home:step.podcast-generation.generating_title')}
-          </h2>
-          <Progress value={progress} />
-          <p className='text-center text-sm text-muted-foreground'>
-            {description}
-          </p>
-        </>
-      )}
-    </div>
+
+        <div className="relative">
+          <Dialog
+            open={isOpenShareCopyDialog}
+            onOpenChange={setIsOpenShareCopyDialog}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {t('home:step.podcast-generation.share-copy-dialog-title')}
+                </DialogTitle>
+                <DialogDescription>
+                  {t('home:step.podcast-generation.share-copy-dialog-description')}
+                </DialogDescription>
+              </DialogHeader>
+              <Input
+                value={copiedText ?? ''}
+                onChange={() => {}}
+                className='w-full'
+              />
+            </DialogContent>
+          </Dialog>
+
+          <AnimatePresence mode='wait'>
+            {isDone ? (
+              <motion.div
+                key="done"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className='flex flex-col items-center gap-8'
+              >
+                <motion.div
+                  className='flex items-center gap-3'
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                >
+                  <div className='flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-green-500/90 to-green-600/90 shadow-lg'>
+                    <Check className='h-5 w-5 text-white' />
+                  </div>
+                  <h2 className='text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground/90 to-foreground/80'>
+                    {t('home:step.podcast-generation.done')}
+                  </h2>
+                </motion.div>
+
+                <div className='w-full max-w-[680px] mx-auto'>
+                  <MP3Player audioSrc={mp3} title={title} />
+                </div>
+
+                <div className='flex flex-col w-full max-w-[680px] gap-6'>
+                  <div className='flex flex-wrap items-center justify-center gap-3'>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant='ghost'
+                          className='flex items-center gap-2 transition-all hover:bg-purple-500/10 hover:text-purple-600 dark:hover:text-purple-400'
+                        >
+                          <ArrowLeft className='h-4 w-4' />
+                          {t('home:step.prev')}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {t('home:step.podcast-generation.confirm-go-back-title')}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t('home:step.podcast-generation.confirm-go-back-description')}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>
+                            {t('home:step.podcast-generation.confirm-go-back-cancel')}
+                          </AlertDialogCancel>
+                          <AlertDialogAction onClick={() => stepper.prev()}>
+                            {t('home:step.podcast-generation.confirm-go-back-continue')}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    <Button
+                      variant='ghost'
+                      className='flex items-center gap-2 transition-all hover:bg-purple-500/10 hover:text-purple-600 dark:hover:text-purple-400'
+                      onClick={handleReset}
+                    >
+                      <Plus className='h-4 w-4' />
+                      {t('home:step.podcast-generation.make-another')}
+                    </Button>
+                  </div>
+
+                  <Separator className='bg-purple-500/10' />
+
+                  <div className='flex flex-wrap items-center justify-center gap-3'>
+                    <Button
+                      variant='ghost'
+                      className='flex items-center gap-2 transition-all hover:bg-purple-500/10 hover:text-purple-600 dark:hover:text-purple-400'
+                      onClick={handleRegenerate}
+                    >
+                      <RotateCcw className='h-4 w-4' />
+                      {t('home:step.podcast-generation.regenerate')}
+                    </Button>
+
+                    <Button
+                      onClick={handleDownload}
+                      disabled={isDownloading || !isAudioReady}
+                      className={cn(
+                        'flex items-center gap-2 transition-all',
+                        'bg-gradient-to-r from-purple-600/90 to-purple-700/90',
+                        'hover:from-purple-600/80 hover:to-purple-700/80',
+                        'hover:scale-105 hover:shadow-lg',
+                        'disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none'
+                      )}
+                    >
+                      {isDownloading ? (
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                      ) : isAudioReady ? (
+                        <Download className='h-4 w-4' />
+                      ) : (
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                      )}
+                      {t('home:step.podcast-generation.download')}
+                    </Button>
+
+                    <Button
+                      className={cn(
+                        'flex items-center gap-2 transition-all',
+                        'bg-gradient-to-r from-purple-600/90 to-purple-700/90',
+                        'hover:from-purple-600/80 hover:to-purple-700/80',
+                        'hover:scale-105 hover:shadow-lg',
+                        'disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none'
+                      )}
+                      onClick={handleShare}
+                      disabled={isShareCreating}
+                    >
+                      {isShareCreating ? (
+                        <Loader2 className='size-4 animate-spin' />
+                      ) : (
+                        <Share className='size-4' />
+                      )}
+                      {t('home:step.podcast-generation.share')}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="generating"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className='flex flex-col items-center gap-8 py-12'
+              >
+                <h2 className='text-2xl font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground/90 to-foreground/80'>
+                  {t('home:step.podcast-generation.generating_title')}
+                </h2>
+                <div className='w-full max-w-md'>
+                  <Progress
+                    value={progress}
+                    className={cn(
+                      'h-2 bg-purple-200/20 dark:bg-purple-900/20',
+                      '[&>div]:bg-gradient-to-r [&>div]:from-purple-600/90 [&>div]:to-purple-700/90',
+                      progress < 100 && 'animate-pulse'
+                    )}
+                  />
+                </div>
+                <p className='text-center text-sm text-muted-foreground max-w-lg'>
+                  {description}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
   )
 }

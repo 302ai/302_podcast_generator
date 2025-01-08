@@ -4,21 +4,29 @@ import { create } from 'zustand'
 import ISO6391 from 'iso-639-1'
 import { Step } from '../hooks/use-stepper'
 import { storeMiddleware } from './middleware'
+import { SearchProvider } from '@/lib/api/search'
 
-export type ResourceType = 'text' | 'url' | 'file'
+export type ResourceType = 'text' | 'url' | 'file' | 'search'
+
+export interface SearchResourceMeta {
+  provider: SearchProvider
+  keywords: string[]
+  searchDescription: string
+}
 
 export interface Resource {
   id: string
   type: ResourceType
   content: string
   url?: string
+  title?: string
+  meta?: SearchResourceMeta
 }
 
 export type Resources = Resource[]
 
 export type PodcastInfo = Omit<PodcastInfoStore, '_hasHydrated'>
 
-// 中英日法德韩
 export type Language = 'en' | 'zh' | 'ja' | 'fr' | 'de' | 'ko'
 export const languageList: Language[] = ['en', 'zh', 'ja', 'fr', 'de', 'ko']
 export const nativeLanguageList = languageList.map((lang) =>
@@ -89,6 +97,8 @@ export interface PodcastInfoStore {
   title: string
   isExtract: boolean
   genDialogPrompt: string
+  isLongGenerating: boolean
+  audienceChoice: number
 }
 
 export interface PodcastInfoActions {
@@ -129,6 +139,8 @@ export interface PodcastInfoActions {
   setTitle: (title: string) => void
   setIsExtract: (isExtract: boolean) => void
   setGenDialogPrompt: (genDialogPrompt: string) => void
+  setIsLongGenerating: (isLongGenerating: boolean) => void
+  setAudienceChoice: (audienceChoice: number) => void
   reset: () => void
 }
 
@@ -146,8 +158,8 @@ export const initialState: Omit<PodcastInfoStore, '_hasHydrated'> = {
   remoteProviderWithSpeakers: {},
   speakers: Array.from({ length: speakerNumsList[1] }, (_, i) => ({
     id: i + 1,
-    provider: 'openai',
-    speaker: 'alloy',
+    provider: 'doubao',
+    speaker: 'zh_female_shuangkuaisisi_moon_bigtts',
     speed: 1,
   })),
   useBgm: false,
@@ -158,6 +170,8 @@ export const initialState: Omit<PodcastInfoStore, '_hasHydrated'> = {
   title: '',
   isExtract: false,
   genDialogPrompt: '',
+  isLongGenerating: false,
+  audienceChoice: 0,
 }
 
 export const usePodcastInfoStore = create<
@@ -190,6 +204,12 @@ export const usePodcastInfoStore = create<
         set(
           produce((state) => {
             state.genDialogPrompt = genDialogPrompt
+          })
+        ),
+      setAudienceChoice: (audienceChoice) =>
+        set(
+          produce((state) => {
+            state.audienceChoice = audienceChoice
           })
         ),
       setBgmVolume: (bgmVolume) =>
@@ -291,6 +311,12 @@ export const usePodcastInfoStore = create<
         set(
           produce((state) => {
             state.lang = lang
+          })
+        ),
+      setIsLongGenerating: (isLongGenerating) =>
+        set(
+          produce((state) => {
+            state.isLongGenerating = isLongGenerating
           })
         ),
       updateAll: (fields) =>

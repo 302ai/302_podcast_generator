@@ -2,6 +2,7 @@
 
 import { optimizeContent } from '@/app/actions/chat'
 import { useClientTranslation } from '@/app/hooks/use-client-translation'
+import { useUserStore } from '@/app/stores/use-user-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -15,7 +16,6 @@ import { BubbleMenu, Editor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { readStreamableValue } from 'ai/rsc'
 import { Copy, Loader2, Replace, RotateCcw, Send, X } from 'lucide-react'
-import { env } from 'next-runtime-env'
 import {
   forwardRef,
   useCallback,
@@ -28,6 +28,7 @@ import toast from 'react-hot-toast'
 import { useCopyToClipboard } from 'usehooks-ts'
 import LogoIcon from '../icons/logo-icon'
 import SelectionHighlight from './selectionHighlight'
+import { env } from 'next-runtime-env'
 const Tiptap = forwardRef<
   Editor | null,
   {
@@ -99,9 +100,7 @@ const Tiptap = forwardRef<
           view.dispatch(tr)
           previousSelection.current = null
           selectedText.current = null
-        } catch (error) {
-          // Expected behavior, when there is no selection, removeMark will report an error
-          // console.error(error)
+        } catch {
         }
       }
     }
@@ -112,6 +111,10 @@ const Tiptap = forwardRef<
   const [generatedContent, setGeneratedContent] = useState('')
 
   const handleSend = useCallback(async () => {
+    if (!prompt) {
+      toast.error(t('home:tiptap.empty_input_warning'))
+      return
+    }
     setIsLoading(true)
     setGeneratedContent('')
     try {
@@ -168,6 +171,15 @@ const Tiptap = forwardRef<
 
     setReplacedContentPosition({ from, to: from + generatedContent.length })
     setGeneratedContent('')
+
+    // const newTr = state.tr.setSelection(
+    //   TextSelection.create(
+    //     previousSelection.current.$anchor.doc,
+    //     from,
+    //     from + generatedContent.length
+    //   )
+    // )
+    // view.dispatch(newTr)
   }
 
   const handleCancel = () => {
@@ -190,36 +202,60 @@ const Tiptap = forwardRef<
             setHasSelection(false)
             instance.hide()
           },
+          zIndex: 9999,
+          appendTo: document.body,
         }}
+        className="relative z-[9999]"
       >
-        <div className='flex w-64 flex-col gap-2'>
-          <div className='relative'>
-            <div className='absolute left-2 top-1/2 -translate-y-1/2'>
-              <LogoIcon className='size-6' />
+        <div className='flex w-64 flex-col gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg border shadow-lg'>
+          <div className='flex flex-col gap-2 p-2'>
+            <div className='relative'>
+              <div className='absolute left-2 top-1/2 -translate-y-1/2'>
+                <LogoIcon className='size-6' />
+              </div>
+              <Input
+                placeholder={t('home:tiptap.input_placeholder')}
+                className='h-12 border-primary bg-background pl-10 pr-10 shadow-sm shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-100'
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    handleSend()
+                  }
+                }}
+                disabled={isLoading}
+              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className='group absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center bg-transparent p-0'
+                    onClick={handleSend}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader2 className='size-4 animate-spin' />
+                    ) : (
+                      <Send className='size-4 text-primary group-hover:text-primary/80' />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                {!prompt && <TooltipContent>{t('home:tiptap.empty_input_warning')}</TooltipContent>}
+              </Tooltip>
             </div>
-            <Input
-              placeholder='请输入您想要的更改'
-              className='h-12 border-primary bg-background px-10 shadow-sm shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-100'
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  handleSend()
-                }
-              }}
-              disabled={isLoading}
-            />
-            <button
-              className='group absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center bg-transparent p-0'
-              onClick={handleSend}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className='size-4 animate-spin' />
-              ) : (
-                <Send className='size-4 text-primary group-hover:text-primary/80' />
-              )}
-            </button>
+            <div>
+              <div className='text-xs text-muted-foreground mb-1'>{t('home:tiptap.preset_prompts')}</div>
+              <div className='grid grid-cols-2 gap-1'>
+                {['concise', 'formal', 'casual', 'grammar', 'typo'].map((type) => (
+                  <button
+                    key={type}
+                    className='text-xs px-2 py-1 rounded border hover:bg-accent text-left'
+                    onClick={() => setPrompt(t(`home:tiptap.preset_${type}`))}
+                  >
+                    {t(`home:tiptap.preset_${type}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           {generatedContent.length > 0 && (
             <div className='flex flex-col gap-2 rounded-md border border-primary bg-background p-2 text-sm text-primary'>
@@ -231,7 +267,7 @@ const Tiptap = forwardRef<
                       <Replace className='size-4' />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Replace</TooltipContent>
+                  <TooltipContent>{t('home:tiptap.button_replace')}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -243,7 +279,7 @@ const Tiptap = forwardRef<
                       <Copy className='size-4' />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Copy</TooltipContent>
+                  <TooltipContent>{t('home:tiptap.button_copy')}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -251,7 +287,7 @@ const Tiptap = forwardRef<
                       <X className='size-4' />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Cancel</TooltipContent>
+                  <TooltipContent>{t('home:tiptap.button_cancel')}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -259,7 +295,7 @@ const Tiptap = forwardRef<
                       <RotateCcw className='size-4' />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Regenerate</TooltipContent>
+                  <TooltipContent>{t('home:tiptap.button_regenerate')}</TooltipContent>
                 </Tooltip>
               </div>
             </div>

@@ -1,13 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { dialogueKy } from '@/lib/api/api'
+import { apiKy } from '@/lib/api/api'
 import { logger } from '@/lib/logger'
 import { emitter } from '@/lib/mitt'
 import { cn } from '@/lib/utils'
-import { events } from 'fetch-event-stream'
 import { convert } from 'html-to-text'
-import { env } from 'next-runtime-env'
 import React, { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useClientTranslation } from '../hooks/use-client-translation'
@@ -18,10 +16,15 @@ import {
   usePodcastInfoStore,
 } from '../stores/use-podcast-info-store'
 import { useUserStore } from '../stores/use-user-store'
-import { AssetsSelectionPanel } from './steps/assets-selection-panel'
+import { AssetsSelectionPanel } from './steps/assets-selection'
 import { AudioSettingsPanel } from './steps/audio-settings-panel'
 import { ContentAdjustmentPanel } from './steps/content-adjustment-panel'
-import { PodcastGenerationPanel } from './steps/podcast-generation-panel'
+import {
+  podcast,
+  PodcastGenerationPanel,
+} from './steps/podcast-generation-panel'
+import useSWR from 'swr'
+import { env } from 'next-runtime-env'
 
 export default function Main({ className }: { className?: string }) {
   const { t } = useClientTranslation()
@@ -34,7 +37,7 @@ export default function Main({ className }: { className?: string }) {
   }, [stepper, setStep])
 
   const { language: uiLang } = useUserStore((state) => ({
-    language: state.language,
+    language: state.language
   }))
   const {
     speakers,
@@ -58,59 +61,50 @@ export default function Main({ className }: { className?: string }) {
     bgmVolume: state.bgmVolume,
   }))
 
-  const handleGenerate = useCallback(async () => {
+  const [taskId, setTaskId] = useState(podcast.get('taskId'))
+
+  const submitTask = useCallback(async () => {
     let _bgmPrompt = bgmPrompt
 
     if (!_bgmPrompt || _bgmPrompt === '') {
       _bgmPrompt = t('home:step.audio-settings.bgm_prompt_placeholder')
     }
     setMp3('')
-    localStorage.setItem('generating', 'true')
+    podcast.set('generating', true)
+
     try {
-      const res = await dialogueKy.post('dialogue/generate', {
-        json: {
-          speakers,
-          contents: dialogueItems.map((item) => ({
-            content: convert(item.content),
-            speaker: item.speaker,
-          })),
-          useBgm,
-          autoGenBgm,
-          bgmPrompt: _bgmPrompt,
-          bgmVolume,
-          uiLang,
-          modelName: env('NEXT_PUBLIC_DEFAULT_MODEL_NAME'),
-        },
-      })
-
-      let abort = new AbortController()
-
-      let apiStream = events(res, abort.signal)
-
-      for await (const event of apiStream) {
-        if (event.event === 'error') {
-          const j = JSON.parse(event.data || '{}')
-          if (typeof j?.error?.err_code !== 'undefined') {
-            emitter.emit('ToastError', j.error.err_code)
-            abort.abort()
-            stepper.goTo('audio-settings')
-            break
-          } else {
-            emitter.emit('ToastError', -10504)
-            abort.abort()
-            stepper.goTo('audio-settings')
-            break
-          }
-        } else {
-          emitter.emit('ProgressEvent', JSON.parse(event.data || '{}'))
-        }
-      }
-    } catch (error) {
-      logger.error(error)
-      toast.error(t('home:step.audio-settings.network_error'))
+      const res = await apiKy
+        .post('302/podcast/async/generate', {
+          json: {
+            speakers,
+            contents: dialogueItems.map((item) => ({
+              content: convert(item.content),
+              speaker: item.speaker,
+            })),
+            useBgm,
+            autoGenBgm,
+            bgmPrompt: _bgmPrompt,
+            bgmVolume,
+            uiLang,
+            modelName: env('NEXT_PUBLIC_DEFAULT_MODEL_NAME'),
+          },
+        })
+        .json<{
+          task_id: string
+        }>()
+      setTaskId(res.task_id)
+      podcast.set('taskId', res.task_id)
+      toast.success(t('home:step.podcast-generation.submit_task_success'))
+    } catch (e) {
+      logger.error(e)
+      // toast.error(t('home:step.podcast-generation.submit_task_error'))
       stepper.goTo('audio-settings')
+      podcast.set('taskId', null)
+      setTaskId(null)
+      podcast.set('generating', false)
     }
   }, [
+    stepper,
     speakers,
     dialogueItems,
     useBgm,
@@ -118,18 +112,61 @@ export default function Main({ className }: { className?: string }) {
     bgmPrompt,
     uiLang,
     setMp3,
-    stepper,
-    bgmVolume,
     t,
+    bgmVolume,
   ])
 
+  const statusFetcher = async () => {
+    const res = await apiKy.get(`302/podcast/async/status/${taskId}`).json<{
+      status: string
+      result?: {
+        progress: number
+        description: string
+        content: string
+        title: string
+        error?: {
+          err_code: number
+          message: string
+        }
+      }
+    }>()
+    return res
+  }
+
+  useSWR(taskId ? ['dialogue', taskId] : null, statusFetcher, {
+    refreshInterval: taskId ? 3000 : 0,
+    onSuccess: (res) => {
+      if (
+        (res?.status === 'success' || res?.status === 'processing') &&
+        res.result
+      ) {
+        emitter.emit('ProgressEvent', res.result)
+      } else if (res?.status === 'fail') {
+        logger.error(res)
+        setTaskId(null)
+        podcast.set('taskId', null)
+        podcast.set('generating', false)
+        emitter.emit('ToastError', res.result?.error?.err_code ?? 0)
+        stepper.goTo('audio-settings')
+      }
+    },
+    onError: (error) => {
+      logger.error(error)
+      podcast.set('generating', false)
+      podcast.set('taskId', null)
+      setTaskId(null)
+      toast.error(t('home:step.podcast-generation.generate_error'))
+      stepper.goTo('audio-settings')
+    },
+  })
+
   useEffect(() => {
-    const generating = localStorage.getItem('generating')
-    if (generating) {
-      handleGenerate()
+    if (taskId) {
+      podcast.set('generating', true)
+    } else {
+      podcast.set('generating', false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [taskId])
 
   const canAccessStep = useCallback(
     (index: number) => {
@@ -249,7 +286,7 @@ export default function Main({ className }: { className?: string }) {
           'audio-settings': () => (
             <AudioSettingsPanel
               stepper={stepper}
-              handleGenerate={handleGenerate}
+              handleSubmitTask={submitTask}
               customModels={customModels}
               setCustomModels={setCustomModels}
             />
@@ -257,7 +294,8 @@ export default function Main({ className }: { className?: string }) {
           'podcast-generation': () => (
             <PodcastGenerationPanel
               stepper={stepper}
-              handleGenerate={handleGenerate}
+              handleSubmitTask={submitTask}
+              setTaskId={setTaskId}
             />
           ),
         })}

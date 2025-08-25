@@ -2,13 +2,13 @@
 
 <p align="center">AI播客生成器通过提交各种图片、文本、链接、文件等素材，使用大语言模型生成对话内容，并支持合成背景音乐，生成高质量的播客音频。</p>
 
-<p align="center"><a href="https://302.ai/tools/podcast/" target="blank"><img src="https://file.302.ai/gpt/imgs/github/20250102/72a57c4263944b73bf521830878ae39a.png" /></a></p >
+<p align="center"><a href="https://302.ai/product/detail/41" target="blank"><img src="https://file.302.ai/gpt/imgs/github/20250102/72a57c4263944b73bf521830878ae39a.png" /></a></p >
 
 <p align="center"><a href="README_zh.md">中文</a> | <a href="README.md">English</a> | <a href="README_ja.md">日本語</a></p>
 
 ![](docs/302_Podcast_Generator.png)      
 
-来自[302.AI](https://302.ai)的[AI播客生成器](https://302.ai/tools/podcast/)的开源版本。
+来自[302.AI](https://302.ai)的[AI播客生成器](https://302.ai/product/detail/41)的开源版本。
 你可以直接登录302.AI，零代码零配置使用在线版本。
 或者对本项目根据自己的需求进行修改，传入302.AI的API KEY，自行部署。
 
